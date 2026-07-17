@@ -86,6 +86,12 @@ exports[`FlowView 1`] = `
       >
         Comment
       </a>
+      <button
+        class="btn btn-xs headers-toggle btn-default"
+        title="Show request/response headers"
+      >
+        Toggle Headers
+      </button>
     </nav>
     <section
       class="request"
@@ -116,80 +122,6 @@ exports[`FlowView 1`] = `
           </span>
         </div>
       </div>
-      <div
-        class="kv-editor headers"
-      >
-        <div
-          class="kv-row"
-        >
-          <span
-            class="inline-input kv-key"
-            tabindex="0"
-          >
-            header
-          </span>
-          : 
-          <span
-            class="inline-input kv-value"
-            placeholder="empty"
-            tabindex="0"
-          >
-            qvalue
-          </span>
-        </div>
-        <div
-          class="kv-row"
-        >
-          <span
-            class="inline-input kv-key"
-            tabindex="0"
-          >
-            content-length
-          </span>
-          : 
-          <span
-            class="inline-input kv-value"
-            placeholder="empty"
-            tabindex="0"
-          >
-            7
-          </span>
-        </div>
-        <div
-          aria-label="Add"
-          class="kv-add-row"
-          role="button"
-        >
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-square-plus icon icon-addSquare"
-            fill="none"
-            height="16"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="16"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect
-              height="18"
-              rx="2"
-              width="18"
-              x="3"
-              y="3"
-            />
-            <path
-              d="M8 12h8"
-            />
-            <path
-              d="M12 8v8"
-            />
-          </svg>
-        </div>
-      </div>
-      <hr />
       <div
         class="contentview"
       >
@@ -392,6 +324,12 @@ exports[`FlowView 2`] = `
       >
         Comment
       </a>
+      <button
+        class="btn btn-xs headers-toggle btn-default"
+        title="Show request/response headers"
+      >
+        Toggle Headers
+      </button>
     </nav>
     <section
       class="response"
@@ -420,80 +358,6 @@ exports[`FlowView 2`] = `
           OK
         </span>
       </div>
-      <div
-        class="kv-editor headers"
-      >
-        <div
-          class="kv-row"
-        >
-          <span
-            class="inline-input kv-key"
-            tabindex="0"
-          >
-            header-response
-          </span>
-          : 
-          <span
-            class="inline-input kv-value"
-            placeholder="empty"
-            tabindex="0"
-          >
-            svalue
-          </span>
-        </div>
-        <div
-          class="kv-row"
-        >
-          <span
-            class="inline-input kv-key"
-            tabindex="0"
-          >
-            content-length
-          </span>
-          : 
-          <span
-            class="inline-input kv-value"
-            placeholder="empty"
-            tabindex="0"
-          >
-            7
-          </span>
-        </div>
-        <div
-          aria-label="Add"
-          class="kv-add-row"
-          role="button"
-        >
-          <svg
-            aria-hidden="true"
-            class="lucide lucide-square-plus icon icon-addSquare"
-            fill="none"
-            height="16"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            width="16"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect
-              height="18"
-              rx="2"
-              width="18"
-              x="3"
-              y="3"
-            />
-            <path
-              d="M8 12h8"
-            />
-            <path
-              d="M12 8v8"
-            />
-          </svg>
-        </div>
-      </div>
-      <hr />
       <div
         class="contentview"
       >
@@ -700,7 +564,7 @@ exports[`FlowView 3`] = `
         class="btn btn-xs headers-toggle btn-default"
         title="Show request/response headers"
       >
-        Headers
+        Toggle Headers
       </button>
     </nav>
     <section
@@ -1082,7 +946,7 @@ exports[`FlowView 4`] = `
         class="btn btn-xs headers-toggle btn-primary"
         title="Hide request/response headers"
       >
-        Headers
+        Toggle Headers
       </button>
     </nav>
     <section

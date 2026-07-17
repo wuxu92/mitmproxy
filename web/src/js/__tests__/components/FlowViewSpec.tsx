@@ -19,7 +19,7 @@ test("FlowView", async () => {
     // Headers toggle (headers hidden by default there).
     fireEvent.click(screen.getByText("Req&Resp"));
     expect(asFragment()).toMatchSnapshot();
-    fireEvent.click(screen.getByText("Headers"));
+    fireEvent.click(screen.getByText("Toggle Headers"));
     expect(asFragment()).toMatchSnapshot();
 
     fireEvent.click(screen.getByText("WebSocket"));
@@ -79,12 +79,16 @@ test("combined request/response view: stacked sections, splitter, headers toggle
 
     const { container, unmount } = render(<FlowView />);
 
-    // Standalone Request tab (default) always shows headers — the combined
-    // view's collapse toggle must not affect it.
+    // Standalone Request tab: headers are hidden by default now and toggled
+    // via the "Toggle Headers" button.
     expect(container.querySelector("section.request")).not.toBeNull();
     expect(container.querySelector("section.response")).toBeNull();
     expect(container.querySelector(".splitter.splitter-y")).toBeNull();
+    expect(container.querySelectorAll(".headers")).toHaveLength(0);
+    fireEvent.click(screen.getByText("Toggle Headers"));
     expect(container.querySelectorAll(".headers")).toHaveLength(1);
+    fireEvent.click(screen.getByText("Toggle Headers"));
+    expect(container.querySelectorAll(".headers")).toHaveLength(0);
 
     // Switch to the combined Req&Resp tab: request and response render stacked
     // in one column with a draggable horizontal splitter between them.
@@ -100,9 +104,9 @@ test("combined request/response view: stacked sections, splitter, headers toggle
 
     // Headers are hidden by default here and appear once toggled.
     expect(container.querySelectorAll(".headers")).toHaveLength(0);
-    fireEvent.click(screen.getByText("Headers"));
+    fireEvent.click(screen.getByText("Toggle Headers"));
     expect(container.querySelectorAll(".headers")).toHaveLength(2);
-    fireEvent.click(screen.getByText("Headers"));
+    fireEvent.click(screen.getByText("Toggle Headers"));
     expect(container.querySelectorAll(".headers")).toHaveLength(0);
 
     // Flush the pending content fetches before teardown so their rejection

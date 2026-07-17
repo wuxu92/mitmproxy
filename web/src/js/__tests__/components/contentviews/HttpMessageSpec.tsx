@@ -240,3 +240,66 @@ describe("HttpMessage body edit", () => {
         });
     });
 });
+
+describe("HttpMessage JSON body", () => {
+    beforeEach(() => {
+        fetchMock.resetMocks();
+    });
+
+    function jsonFlow() {
+        const tflow = TFlow();
+        tflow.request.headers = [["content-type", "application/json"]];
+        tflow.request.contentLength = 8;
+        return tflow;
+    }
+
+    test("renders a JSON body as a collapsible tree", async () => {
+        fetchMock.mockResponses(
+            JSON.stringify({
+                text: '{\n    "a": 1\n}',
+                view_name: "JSON",
+                description: "",
+                syntax_highlight: "yaml",
+            }),
+        );
+        const tflow = jsonFlow();
+        render(<HttpMessage flow={tflow} message={tflow.request} />);
+        await waitFor(() => screen.getByText('"a"'));
+        expect(screen.getByText("1")).toBeInTheDocument();
+        // A fold toggle exists for the root object.
+        expect(document.querySelector(".json-toggle")).not.toBeNull();
+    });
+
+    test("edits a JSON value inline and saves compact JSON", async () => {
+        fetchMock.mockResponses(
+            JSON.stringify({
+                text: '{\n    "a": 1\n}',
+                view_name: "JSON",
+                description: "",
+                syntax_highlight: "yaml",
+            }),
+            '{"a": 1}',
+            JSON.stringify({}),
+        );
+        const tflow = jsonFlow();
+        render(<HttpMessage flow={tflow} message={tflow.request} />);
+        await waitFor(() => screen.getByText('"a"'));
+
+        fireEvent.click(screen.getByText("Edit"));
+        // In edit mode the value is static until clicked.
+        fireEvent.click(await screen.findByText("1"));
+        const input = await screen.findByDisplayValue("1");
+        fireEvent.change(input, { target: { value: "2" } });
+        fireEvent.blur(input);
+        fireEvent.click(screen.getByText("Done"));
+
+        await waitFor(() => {
+            const putCall = fetchMock.mock.calls.find(
+                ([, opts]) => opts && (opts as RequestInit).method === "PUT",
+            );
+            expect(putCall).toBeDefined();
+            const body = JSON.parse(putCall![1]!.body as string);
+            expect(body.request.content).toBe('{"a":2}');
+        });
+    });
+});

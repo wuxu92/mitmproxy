@@ -169,24 +169,21 @@ const Message = React.memo(function Message({
     flow,
     message,
     part,
-    collapseHeaders,
 }:
     | {
           flow: HTTPFlow;
           message: HTTPMessage;
           part: "request";
-          collapseHeaders?: boolean;
       }
     | {
           flow: HTTPFlow & { response: HTTPResponse };
           message: HTTPMessage;
           part: "response";
-          collapseHeaders?: boolean;
       }) {
     const showHeaders = useAppSelector((state) => state.ui.flow.showHeaders);
-    // Standalone Request/Response tabs always show headers; only the combined
-    // Req&Resp view lets them collapse via the header toggle.
-    const headersVisible = !collapseHeaders || showHeaders;
+    // The header toggle collapses headers in every HTTP view (standalone
+    // Request/Response tabs and the combined Req&Resp view). Hidden by default.
+    const headersVisible = showHeaders;
     return (
         <section className={part}>
             {part === "request" ? (
@@ -230,12 +227,7 @@ export function HttpMessages() {
     const flow = useAppSelector((state) => state.flows.selected[0]) as HTTPFlow;
     return (
         <>
-            <Message
-                flow={flow}
-                message={flow.request}
-                part="request"
-                collapseHeaders
-            />
+            <Message flow={flow} message={flow.request} part="request" />
             {flow.response && (
                 <>
                     <Splitter axis="y" />
@@ -243,7 +235,6 @@ export function HttpMessages() {
                         flow={flow as HTTPFlow & { response: HTTPResponse }}
                         message={flow.response}
                         part="response"
-                        collapseHeaders
                     />
                 </>
             )}

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import type { HTTPFlow, HTTPMessage } from "../../flow";
 import { useAppDispatch, useAppSelector } from "../../ducks";
 import { setContentViewFor } from "../../ducks/ui/flow";
@@ -13,7 +13,31 @@ import Button from "../common/Button";
 import CodeEditor from "./CodeEditor";
 import ContentRenderer from "./ContentRenderer";
 import ViewSelector from "./ViewSelector";
+import JsonTree from "./JsonTree";
+import type { JsonValue } from "./JsonTree";
+import { SyntaxHighlight } from "../../backends/consts";
 import { copyViewContentDataToClipboard, fetchApi } from "../../utils";
+
+// Mirrors the backend JSON contentview's render_priority (see _view_json.py):
+// application/json, application/json-rpc, or any application/*+json subtype.
+function isJsonContentType(contentType: string | undefined): boolean {
+    if (!contentType) return false;
+    const ct = contentType.toLowerCase();
+    return (
+        ct === "application/json" ||
+        ct === "application/json-rpc" ||
+        (ct.startsWith("application/") && ct.endsWith("json"))
+    );
+}
+
+function tryParseJson(text: string | undefined): { value: JsonValue } | null {
+    if (text === undefined || text === "") return null;
+    try {
+        return { value: JSON.parse(text) as JsonValue };
+    } catch {
+        return null;
+    }
+}
 
 type HttpMessageProps = {
     flow: HTTPFlow;
@@ -55,14 +79,75 @@ function HttpMessageEdit({ flow, message, stopEdit }: HttpMessageEditProps) {
     const content = useContent(url, message.contentHash);
     const [editedContent, setEditedContent] = useState<string>();
 
+    const isJson = isJsonContentType(MessageUtils.getContentType(message));
+    const [jsonData, setJsonData] = useState<JsonValue | undefined>();
+    const [jsonMode, setJsonMode] = useState(false);
+    const [rawMode, setRawMode] = useState(false);
+    const [rawText, setRawText] = useState<string>("");
+    useEffect(() => {
+        const parsed = isJson ? tryParseJson(content) : null;
+        if (parsed) {
+            setJsonData(parsed.value);
+            setJsonMode(true);
+        } else {
+            setJsonMode(false);
+        }
+    }, [content, isJson]);
+
+    const toggleRaw = () => {
+        if (!rawMode) {
+            setRawText(JSON.stringify(jsonData, null, 4));
+            setRawMode(true);
+        } else {
+            const parsed = tryParseJson(rawText);
+            if (parsed) setJsonData(parsed.value);
+            setRawMode(false);
+        }
+    };
+
     const save = async () => {
+        let newContent: string;
+        if (jsonMode && rawMode) {
+            newContent = rawText;
+        } else if (jsonMode && jsonData !== undefined) {
+            newContent = JSON.stringify(jsonData);
+        } else {
+            newContent = editedContent ?? content ?? "";
+        }
         await dispatch(
             flowActions.update(flow, {
-                [part]: { content: editedContent ?? content ?? "" },
+                [part]: { content: newContent },
             }),
         );
         stopEdit();
     };
+
+    let body: React.ReactNode;
+    if (isJson && content === undefined) {
+        body = <div className="json-tree">Loading…</div>;
+    } else if (jsonMode && rawMode) {
+        body = (
+            <CodeEditor
+                initialContent={rawText}
+                language={SyntaxHighlight.JAVASCRIPT}
+                onChange={(t) => {
+                    setRawText(t);
+                    const parsed = tryParseJson(t);
+                    if (parsed) setJsonData(parsed.value);
+                }}
+            />
+        );
+    } else if (jsonMode && jsonData !== undefined) {
+        body = <JsonTree data={jsonData} editable onChange={setJsonData} />;
+    } else {
+        body = (
+            <CodeEditor
+                initialContent={content || ""}
+                onChange={setEditedContent}
+            />
+        );
+    }
+
     return (
         <div className="contentview" key="edit">
             <div className="controls">
@@ -84,11 +169,20 @@ function HttpMessageEdit({ flow, message, stopEdit }: HttpMessageEditProps) {
                 >
                     Cancel
                 </Button>
+                {jsonMode && (
+                    <>
+                        &nbsp;
+                        <Button
+                            onClick={toggleRaw}
+                            icon={rawMode ? "fold" : "edit"}
+                            className="btn-xs"
+                        >
+                            {rawMode ? "Tree" : "Raw"}
+                        </Button>
+                    </>
+                )}
             </div>
-            <CodeEditor
-                initialContent={content || ""}
-                onChange={setEditedContent}
-            />
+            {body}
         </div>
     );
 }
@@ -114,13 +208,22 @@ function HttpMessageView({ flow, message, startEdit }: HttpMessageViewProps) {
         [maxLines],
     );
 
+    const wantJsonTree =
+        isJsonContentType(MessageUtils.getContentType(message)) &&
+        (contentView === "Auto" || contentView === "JSON");
+
     const contentViewData = useContentView(
         flow,
         message,
         contentView,
-        maxLines + 1,
+        wantJsonTree ? undefined : maxLines + 1,
         message.contentHash,
     );
+
+    const jsonData =
+        wantJsonTree && contentViewData?.view_name === "JSON"
+            ? tryParseJson(contentViewData.text)
+            : null;
 
     let desc: string;
     if (message.contentLength === 0) {
@@ -169,11 +272,15 @@ function HttpMessageView({ flow, message, startEdit }: HttpMessageViewProps) {
             {ViewImage.matches(message) && (
                 <ViewImage flow={flow} message={message} />
             )}
-            <ContentRenderer
-                content={contentViewData?.text ?? ""}
-                maxLines={maxLines}
-                showMore={showMore}
-            />
+            {jsonData ? (
+                <JsonTree data={jsonData.value} />
+            ) : (
+                <ContentRenderer
+                    content={contentViewData?.text ?? ""}
+                    maxLines={maxLines}
+                    showMore={showMore}
+                />
+            )}
         </div>
     );
 }

@@ -29,9 +29,13 @@ describe("onKeyDown", () => {
         return store;
     };
 
-    const createKeyEvent = (key, ctrlKey = false) => {
+    const createKeyEvent = (
+        key,
+        ctrlKey = false,
+        target: EventTarget | undefined = undefined,
+    ) => {
         // @ts-expect-error not a real KeyboardEvent
-        return onKeyDown({ key, ctrlKey, preventDefault: jest.fn() });
+        return onKeyDown({ key, ctrlKey, target, preventDefault: jest.fn() });
     };
 
     afterEach(() => {
@@ -88,6 +92,15 @@ describe("onKeyDown", () => {
         expect(store.getState().ui.flow.tab).toBe("response");
         store.dispatch(createKeyEvent("ArrowRight"));
         expect(store.getState().ui.flow.tab).toBe("httpmessages");
+    });
+
+    it("should ignore keys from editable fields", () => {
+        const store = makeStore();
+        expect(store.getState().ui.flow.tab).toBe("request");
+        const input = document.createElement("input");
+        store.dispatch(createKeyEvent("ArrowRight", false, input));
+        // Focused input keeps the caret movement; the tab must not switch.
+        expect(store.getState().ui.flow.tab).toBe("request");
     });
 
     it("should handle delete action", () => {

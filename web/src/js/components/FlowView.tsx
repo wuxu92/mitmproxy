@@ -161,7 +161,9 @@ export default function FlowView() {
                         {tabLabels[tabId]}
                     </a>
                 ))}
-                {active === "httpmessages" && (
+                {(active === "request" ||
+                    active === "response" ||
+                    active === "httpmessages") && (
                     <button
                         className={classnames("btn", "btn-xs", "headers-toggle", {
                             "btn-primary": showHeaders,
@@ -174,7 +176,7 @@ export default function FlowView() {
                         }
                         onClick={() => dispatch(toggleHeaders())}
                     >
-                        Headers
+                        Toggle Headers
                     </button>
                 )}
             </nav>

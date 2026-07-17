@@ -5,9 +5,27 @@ import { tabsForFlow } from "../../components/FlowView";
 import { runCommand } from "../../utils";
 import type { AppDispatch, RootState } from "../store";
 
+function isEditableTarget(target: EventTarget | null): boolean {
+    const el = target as HTMLElement | null;
+    if (!el || typeof el.tagName !== "string") return false;
+    const tag = el.tagName;
+    return (
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        el.isContentEditable === true
+    );
+}
+
 export function onKeyDown(e: KeyboardEvent) {
     //console.debug("onKeyDown", e)
     if (e.ctrlKey || e.metaKey) {
+        return () => {};
+    }
+    // Let editable fields (text inputs, selects, CodeMirror's contenteditable)
+    // handle their own keys — otherwise arrow keys would switch flow tabs
+    // instead of moving the caret within the field.
+    if (isEditableTarget(e.target)) {
         return () => {};
     }
     const key = e.key;
