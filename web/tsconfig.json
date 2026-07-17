@@ -6,6 +6,11 @@
         "esModuleInterop": true,
         "jsx": "react",
         "strictNullChecks": true,
+        // Mirror tsc's non-strict defaults explicitly so the Go-native compiler
+        // (tsgo / TS7) matches tsc's effective behavior on this codebase.
+        "noImplicitAny": false,
+        "strictPropertyInitialization": false,
+        "useUnknownInCatchVariables": false,
         "skipLibCheck": true
     }
 }

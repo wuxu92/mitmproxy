@@ -1,6 +1,7 @@
 import * as React from "react";
 import Splitter from "./common/Splitter";
 import FlowTable from "./FlowTable";
+import FlowTree from "./FlowTree";
 import FlowView from "./FlowView";
 import { useAppSelector } from "../ducks";
 import CaptureSetup from "./Modes/CaptureSetup";
@@ -13,6 +14,7 @@ export default function MainView() {
     );
     const hasFlows = useAppSelector((state) => state.flows.list.length > 0);
     const currentTab = useAppSelector((state) => state.ui.tabs.current);
+    const treeMode = useAppSelector((state) => state.ui.flowtree.mode);
 
     return (
         <div className="main-view">
@@ -20,7 +22,15 @@ export default function MainView() {
                 <Modes />
             ) : (
                 <>
-                    {hasFlows ? <FlowTable /> : <CaptureSetup />}
+                    {hasFlows ? (
+                        treeMode === "structure" ? (
+                            <FlowTree />
+                        ) : (
+                            <FlowTable />
+                        )
+                    ) : (
+                        <CaptureSetup />
+                    )}
                     {hasOneFlowSelected && (
                         <>
                             <Splitter key="splitter" />

@@ -5,6 +5,14 @@ import Button from "../common/Button";
 import { update as updateOptions } from "../../ducks/options";
 import { useAppDispatch, useAppSelector } from "../../ducks";
 import { FilterName, setFilter, setHighlight } from "../../ducks/ui/filter";
+import {
+    setMode,
+    expandAll,
+    collapseAll,
+    toggleCompact,
+} from "../../ducks/ui/flowtree";
+import { selectAllExpandableKeys } from "../../ducks/flows/treeSelectors";
+import classnames from "classnames";
 
 FlowListMenu.title = "Flow List";
 
@@ -25,6 +33,13 @@ export default function FlowListMenu() {
                     <ResumeAll />
                 </div>
                 <div className="menu-legend">Intercept</div>
+            </div>
+
+            <div className="menu-group">
+                <div className="menu-content">
+                    <ViewModeToggle />
+                </div>
+                <div className="menu-legend">View</div>
             </div>
         </div>
     );
@@ -86,5 +101,67 @@ export function ResumeAll() {
         >
             Resume All
         </Button>
+    );
+}
+
+export function ViewModeToggle() {
+    const dispatch = useAppDispatch();
+    const mode = useAppSelector((state) => state.ui.flowtree.mode);
+    const expandableKeys = useAppSelector(selectAllExpandableKeys);
+    const compact = useAppSelector((state) => state.ui.flowtree.compact);
+    const isStructure = mode === "structure";
+    return (
+        <div className="btn-group" role="group">
+            <Button
+                className={classnames("btn-sm", {
+                    "btn-primary": !isStructure,
+                })}
+                title="Chronological list of flows"
+                icon="files"
+                onClick={() => dispatch(setMode("sequence"))}
+            >
+                Sequence
+            </Button>
+            <Button
+                className={classnames("btn-sm", {
+                    "btn-primary": isStructure,
+                })}
+                title="Group flows into a tree by host and path"
+                icon="openFolder"
+                onClick={() => dispatch(setMode("structure"))}
+            >
+                Structure
+            </Button>
+            {isStructure && (
+                <>
+                    <Button
+                        className="btn-sm"
+                        title="Expand all"
+                        icon="expandMore"
+                        onClick={() => dispatch(expandAll(expandableKeys))}
+                    >
+                        Expand
+                    </Button>
+                    <Button
+                        className="btn-sm"
+                        title="Collapse all"
+                        icon="chevronUp"
+                        onClick={() => dispatch(collapseAll())}
+                    >
+                        Collapse
+                    </Button>
+                    <Button
+                        className={classnames("btn-sm", {
+                            "btn-primary": compact,
+                        })}
+                        title="Collapse single-child folders into one row"
+                        icon="fold"
+                        onClick={() => dispatch(toggleCompact())}
+                    >
+                        Compact
+                    </Button>
+                </>
+            )}
+        </div>
     );
 }

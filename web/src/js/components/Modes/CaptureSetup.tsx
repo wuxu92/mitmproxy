@@ -45,7 +45,9 @@ function ServerDescription({
     if (all_same_port && unbound) {
         listen_str = formatAddress(["*", listen_addrs[0][1]]);
     } else {
-        listen_str = listen_addrs.map(formatAddress).join(" and ");
+        listen_str = listen_addrs
+            .map((addr) => formatAddress([addr[0], addr[1]]))
+            .join(" and ");
     }
     description = description[0].toUpperCase() + description.substr(1);
     let desc;

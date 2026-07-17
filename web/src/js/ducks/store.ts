@@ -29,7 +29,10 @@ export const reducer = {
 
 export const middlewares = {
     immutableCheck: { warnAfter: 500_000 },
-    serializableCheck: { warnAfter: 500_000, ignoredPaths: ["flows"] },
+    serializableCheck: {
+        warnAfter: 500_000,
+        ignoredPaths: ["flows", "ui.flowtree.expanded"],
+    },
 };
 
 export const store = configureStore({

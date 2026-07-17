@@ -266,6 +266,18 @@ export const statusCode = (flow: Flow): string | number | undefined => {
     }
 };
 
+/** Charles/table status color for an HTTP or DNS response, or undefined when
+ *  there is no response yet. Shared by the flow table and the flow tree. */
+export const statusColor = (flow: Flow): string | undefined => {
+    if ((flow.type !== "http" && flow.type !== "dns") || !flow.response)
+        return undefined;
+    const code = flow.response.status_code;
+    if (code < 200) return "green";
+    if (code < 300) return "darkgreen";
+    if (code < 400) return "lightblue";
+    return "red";
+};
+
 export const getMethod = (flow: Flow): string => {
     switch (flow.type) {
         case "http":

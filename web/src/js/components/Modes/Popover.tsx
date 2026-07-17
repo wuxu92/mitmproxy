@@ -32,10 +32,12 @@ export function Popover({
     const buttonRef = React.useRef<HTMLButtonElement>(null);
     const popoverRef = React.useRef<HTMLDivElement>(null);
     React.useEffect(() => {
-        // @ts-expect-error no anchor support yet
-        buttonRef.current!.style.anchorName = cssId;
-        // @ts-expect-error no anchor support yet
-        popoverRef.current!.style.positionAnchor = cssId;
+        // anchorName / positionAnchor are not yet in the DOM style typings.
+        (buttonRef.current!.style as unknown as Record<string, string>).anchorName =
+            cssId;
+        (
+            popoverRef.current!.style as unknown as Record<string, string>
+        ).positionAnchor = cssId;
     }, []);
 
     //trick to open the popover even when clicking on an input field (local mode)

@@ -1,0 +1,166 @@
+/* Charles-style flow tree. Scoped via CSS Modules so it never collides with the
+   global Less classes used by the legacy flow table. Colors mirror flowtable.less
+   for visual consistency (selected / highlighted / intercept orange). */
+
+.tree {
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    position: relative;
+    contain: strict;
+}
+
+/* The spacer establishes the full virtual height; rows are absolutely
+   positioned inside it by the virtualizer. */
+.spacer {
+    width: 100%;
+    position: relative;
+}
+
+.row {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    height: 32px;
+    line-height: 32px;
+    cursor: pointer;
+    white-space: nowrap;
+    box-sizing: border-box;
+    background-color: hsl(0, 0%, 100%);
+}
+.row:nth-child(even) {
+    background-color: hsl(0, 0%, 97%);
+}
+.row:hover {
+    background-color: hsl(0, 0%, 93%);
+}
+.highlighted {
+    background-color: hsl(48, 100%, 80%) !important;
+}
+.selected {
+    background-color: hsl(209, 51%, 92%) !important;
+}
+.selected.highlighted {
+    background-color: hsl(209, 96%, 74%) !important;
+}
+
+.twisty {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 100%;
+    flex: 0 0 18px;
+    color: #666;
+}
+.twistyPlaceholder {
+    flex: 0 0 18px;
+}
+
+.icon {
+    display: inline-flex;
+    align-items: center;
+    width: 20px;
+    flex: 0 0 20px;
+    color: #555;
+}
+
+.label {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 8px;
+}
+.hostLabel {
+    font-weight: 600;
+}
+.folderLabel {
+    color: #333;
+}
+
+/* Right-aligned metadata cells on flow/leaf rows. */
+.meta {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding-right: 8px;
+    color: #444;
+}
+.method {
+    width: 52px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.status {
+    width: 40px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.size {
+    width: 64px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: #666;
+}
+.time {
+    width: 56px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: #666;
+}
+
+/* Aggregate badges on host/folder rows. */
+.badges {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding-right: 10px;
+}
+.count {
+    min-width: 20px;
+    padding: 0 6px;
+    height: 18px;
+    line-height: 18px;
+    border-radius: 9px;
+    background-color: hsl(0, 0%, 88%);
+    color: #333;
+    font-size: 11px;
+    text-align: center;
+}
+.error {
+    background-color: hsl(0, 65%, 55%);
+    color: #fff;
+}
+.pending {
+    background-color: hsl(30, 100%, 50%);
+    color: #fff;
+}
+
+.intercepted .method,
+.intercepted .label {
+    color: hsl(30, 100%, 50%);
+}
+
+.quickaction {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    width: 24px;
+    justify-content: center;
+    visibility: hidden;
+}
+.row:hover .quickaction {
+    visibility: visible;
+}
+
+.empty {
+    padding: 16px;
+    color: #888;
+    text-align: center;
+}

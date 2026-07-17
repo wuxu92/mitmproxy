@@ -12,6 +12,9 @@ module.exports = async () => {
             "<rootDir>/src/js/components/editors/",
         ],
         collectCoverageFrom: ["src/js/**/*.{js,jsx,ts,tsx}"],
+        moduleNameMapper: {
+            "\\.module\\.css$": "<rootDir>/__mocks__/cssModuleProxy.js",
+        },
         transform: {
             "^.+\\.[jt]sx?$": [
                 "esbuild-jest",

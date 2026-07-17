@@ -44,6 +44,7 @@ export default defineConfig([
             "gulpfile.js",
             "setup-jest.js",
             "setup-global-jest.js",
+            "__mocks__/**/*.js",
         ],
         languageOptions: { globals: globals.node },
     },

@@ -64,6 +64,12 @@ export const testState: RootState = {
         modal: {
             activeModal: undefined,
         },
+        flowtree: {
+            mode: "sequence",
+            expanded: new Set<string>(),
+            autoExpandNew: false,
+            compact: true,
+        },
         optionsEditor: {
             anticache: { isUpdating: true, error: false, value: true },
             cert_passphrase: {
