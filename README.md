@@ -18,6 +18,51 @@ interface for HTTP/1, HTTP/2, and WebSockets.
 The installation instructions are [here](https://docs.mitmproxy.org/stable/overview-installation).
 If you want to install from source, see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
+## Running mitmweb from source
+
+``mitmweb`` bundles a React/TypeScript frontend (in [`web/`](./web)) with the
+Python backend. To build and run it locally you need two toolchains:
+
+- **[uv](https://docs.astral.sh/uv/)** for the Python side, and
+- **[Node.js](https://nodejs.org/) 24+** for the frontend (`node --version` to check).
+
+Install both, then build the UI and start mitmweb:
+
+#### Linux / macOS
+
+```shell
+git clone https://github.com/mitmproxy/mitmproxy.git
+cd mitmproxy
+
+# Build the web UI (writes assets into mitmproxy/tools/web/static).
+cd web && npm install && npm run ci-build-release && cd ..
+
+# Serve it — open the URL mitmweb prints (default http://127.0.0.1:8081/).
+uv run mitmweb
+```
+
+#### Windows (PowerShell)
+
+The `ci-build-release` script relies on the POSIX `rm -rf`, so on Windows delete the
+old assets and build manually (or run the command above from Git Bash / WSL):
+
+```powershell
+git clone https://github.com/mitmproxy/mitmproxy.git
+cd mitmproxy
+
+cd web
+npm install
+Remove-Item -Recurse -Force ..\mitmproxy\tools\web\static
+npx vite build
+cd ..
+
+uv run mitmweb
+```
+
+For live hot-reloading development (running the Vite dev server alongside the
+backend), testing, and a walkthrough of the UI — including the JSON tree editor and
+the header toggle — see [`web/README.md`](./web/README.md).
+
 ## Documentation & Help
 
 General information, tutorials, and precompiled binaries can be found on the mitmproxy website.
