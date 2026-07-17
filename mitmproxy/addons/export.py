@@ -1,4 +1,5 @@
 import logging
+import re
 import shlex
 from collections.abc import Callable
 from collections.abc import Sequence
@@ -132,8 +133,95 @@ def raw_response(f: flow.Flow) -> bytes:
     return assemble.assemble_response(response)
 
 
-def raw(f: flow.Flow, separator=b"\r\n\r\n") -> bytes:
-    """Return either the request or response if only one exists, otherwise return both"""
+# Request headers whose values are credentials and must never be shared.
+REDACT_REQUEST_HEADERS = frozenset(
+    [
+        "authorization",
+        "proxy-authorization",
+        "cookie",
+        "x-api-key",
+        "api-key",
+        "x-auth-token",
+        "x-amz-security-token",
+    ]
+)
+
+# Response headers worth keeping; everything else is dropped as noise.
+KEEP_RESPONSE_HEADERS = frozenset(
+    [
+        "content-length",
+        "content-type",
+    ]
+)
+
+# Response headers whose name contains one of these substrings are also kept
+# (e.g. request IDs and correlation IDs useful for investigating an issue).
+KEEP_RESPONSE_HEADER_PATTERNS = ("request-id", "correlation")
+
+REDACTED = "[REDACTED]"
+
+# Azure subscription IDs are credential-like GUIDs that appear after
+# `/subscriptions/` in URLs and as `"subscriptionId": "<guid>"` in bodies.
+_SUBSCRIPTION_PATTERNS = [
+    re.compile(rb"(?i)(/subscriptions/)[0-9a-f-]{36}"),
+    re.compile(rb'(?i)("subscriptionId"\s*:\s*")[0-9a-f-]{36}'),
+]
+
+
+def redact_subscription_ids(data: bytes) -> bytes:
+    for pattern in _SUBSCRIPTION_PATTERNS:
+        data = pattern.sub(rb"\1" + REDACTED.encode(), data)
+    return data
+
+
+def redact_request(request: http.Request) -> None:
+    """Strip credential header values and subscription IDs from a request in place."""
+    for name in list(request.headers.keys()):
+        if name.lower() in REDACT_REQUEST_HEADERS:
+            request.headers[name] = REDACTED
+    request.path = redact_subscription_ids(request.path.encode()).decode()
+    content = request.content
+    if content:
+        request.content = redact_subscription_ids(content)
+
+
+def redact_response(response: http.Response) -> None:
+    """Drop noisy/sensitive response headers and subscription IDs in place."""
+    for name in list(response.headers.keys()):
+        lname = name.lower()
+        keep = lname in KEEP_RESPONSE_HEADERS or any(
+            p in lname for p in KEEP_RESPONSE_HEADER_PATTERNS
+        )
+        if not keep:
+            del response.headers[name]
+    content = response.content
+    if content:
+        response.content = redact_subscription_ids(content)
+
+
+def raw_redacted_request(f: flow.Flow) -> bytes:
+    request = cleanup_request(f)
+    if request.raw_content is None:
+        raise exceptions.CommandError("Request content missing.")
+    redact_request(request)
+    return assemble.assemble_request(request)
+
+
+def raw_redacted_response(f: flow.Flow) -> bytes:
+    response = cleanup_response(f)
+    if response.raw_content is None:
+        raise exceptions.CommandError("Response content missing.")
+    redact_response(response)
+    return assemble.assemble_response(response)
+
+
+def _assemble_raw(
+    f: flow.Flow,
+    request_fn: Callable[[flow.Flow], bytes],
+    response_fn: Callable[[flow.Flow], bytes],
+    separator: bytes,
+    websocket: bool,
+) -> bytes:
     request_present = (
         isinstance(f, http.HTTPFlow) and f.request and f.request.raw_content is not None
     )
@@ -144,16 +232,28 @@ def raw(f: flow.Flow, separator=b"\r\n\r\n") -> bytes:
     )
 
     if request_present and response_present:
-        parts = [raw_request(f), raw_response(f)]
-        if isinstance(f, http.HTTPFlow) and f.websocket:
+        parts = [request_fn(f), response_fn(f)]
+        if websocket and isinstance(f, http.HTTPFlow) and f.websocket:
             parts.append(f.websocket._get_formatted_messages())
         return separator.join(parts)
     elif request_present:
-        return raw_request(f)
+        return request_fn(f)
     elif response_present:
-        return raw_response(f)
+        return response_fn(f)
     else:
         raise exceptions.CommandError("Can't export flow with no request or response.")
+
+
+def raw(f: flow.Flow, separator=b"\r\n\r\n") -> bytes:
+    """Return either the request or response if only one exists, otherwise return both"""
+    return _assemble_raw(f, raw_request, raw_response, separator, websocket=True)
+
+
+def raw_redacted(f: flow.Flow, separator=b"\r\n\r\n") -> bytes:
+    """Like `raw`, but with credentials and Azure subscription IDs redacted for sharing."""
+    return _assemble_raw(
+        f, raw_redacted_request, raw_redacted_response, separator, websocket=False
+    )
 
 
 formats: dict[str, Callable[[flow.Flow], str | bytes]] = dict(
@@ -162,6 +262,7 @@ formats: dict[str, Callable[[flow.Flow], str | bytes]] = dict(
     raw=raw,
     raw_request=raw_request,
     raw_response=raw_response,
+    raw_redacted=raw_redacted,
 )
 
 

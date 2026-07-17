@@ -294,6 +294,93 @@ class TestRawResponse:
         assert b"content-length: 7" in export.raw_response(request)
 
 
+class TestRawRedacted:
+    def test_redacts_credential_request_headers(self):
+        f = tflow.tflow(
+            req=tutils.treq(
+                headers=(
+                    (b"authorization", b"Bearer supersecret"),
+                    (b"cookie", b"session=abc"),
+                    (b"x-api-key", b"key123"),
+                    (b"accept", b"application/json"),
+                ),
+            ),
+        )
+        out = export.raw_redacted_request(f)
+        assert b"supersecret" not in out
+        assert b"session=abc" not in out
+        assert b"key123" not in out
+        assert b"authorization: [REDACTED]" in out
+        assert b"cookie: [REDACTED]" in out
+        assert b"accept: application/json" in out
+
+    def test_filters_response_headers_to_allowlist(self):
+        f = tflow.tflow(
+            resp=tutils.tresp(
+                headers=(
+                    (b"content-length", b"7"),
+                    (b"content-type", b"application/json"),
+                    (b"x-ms-request-id", b"req-42"),
+                    (b"x-correlation-id", b"corr-99"),
+                    (b"set-cookie", b"session=abc"),
+                    (b"server", b"nginx"),
+                ),
+            ),
+        )
+        out = export.raw_redacted_response(f)
+        assert b"content-type: application/json" in out
+        assert b"x-ms-request-id: req-42" in out
+        assert b"x-correlation-id: corr-99" in out
+        assert b"set-cookie" not in out
+        assert b"server: nginx" not in out
+
+    def test_redacts_subscription_ids(self):
+        sub = "12345678-1234-1234-1234-1234567890ab"
+        f = tflow.tflow(
+            req=tutils.treq(
+                path=f"/subscriptions/{sub}/resourceGroups/rg".encode(),
+                content=b"",
+            ),
+            resp=tutils.tresp(
+                headers=((b"content-type", b"application/json"),),
+                content=f'{{"subscriptionId": "{sub}"}}'.encode(),
+            ),
+        )
+        out = export.raw_redacted(f)
+        assert sub.encode() not in out
+        assert b"/subscriptions/[REDACTED]/resourceGroups/rg" in out
+        assert b'"subscriptionId": "[REDACTED]"' in out
+
+    def test_updates_content_length_after_body_redaction(self):
+        sub = "12345678-1234-1234-1234-1234567890ab"
+        body = f'{{"subscriptionId": "{sub}"}}'.encode()
+        f = tflow.tflow(
+            resp=tutils.tresp(
+                headers=(
+                    (b"content-length", str(len(body)).encode()),
+                    (b"content-type", b"application/json"),
+                ),
+                content=body,
+            ),
+        )
+        out = export.raw_redacted_response(f)
+        redacted_body = b'{"subscriptionId": "[REDACTED]"}'
+        assert redacted_body in out
+        assert f"content-length: {len(redacted_body)}".encode() in out
+
+    def test_req_and_resp_present(self, get_flow):
+        out = export.raw_redacted(get_flow)
+        assert b"header: qvalue" in out
+        assert b"header-response: svalue" not in out
+
+    def test_tcp(self, tcp_flow):
+        with pytest.raises(
+            exceptions.CommandError,
+            match="Can't export flow with no request or response",
+        ):
+            export.raw_redacted(tcp_flow)
+
+
 def qr(f):
     with open(f, "rb") as fp:
         return fp.read()
@@ -305,7 +392,14 @@ def test_export(tmp_path) -> None:
     with taddons.context() as tctx:
         tctx.configure(e)
 
-        assert e.formats() == ["curl", "httpie", "raw", "raw_request", "raw_response"]
+        assert e.formats() == [
+            "curl",
+            "httpie",
+            "raw",
+            "raw_redacted",
+            "raw_request",
+            "raw_response",
+        ]
         with pytest.raises(exceptions.CommandError):
             e.file("nonexistent", tflow.tflow(resp=True), f)
 
