@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Request, Response } from "./FlowView/HttpMessages";
+import { HttpMessages, Request, Response } from "./FlowView/HttpMessages";
 import {
     Request as DnsRequest,
     Response as DnsResponse,
@@ -9,7 +9,7 @@ import Error from "./FlowView/Error";
 import Timing from "./FlowView/Timing";
 import WebSocket from "./FlowView/WebSocket";
 import Comment from "./FlowView/Comment";
-import { selectTab } from "../ducks/ui/flow";
+import { selectTab, toggleHeaders } from "../ducks/ui/flow";
 import { useAppDispatch, useAppSelector } from "../ducks";
 import type {
     Error as FlowError,
@@ -26,6 +26,7 @@ import Icon from "./common/Icon";
 type TabId =
     | "request"
     | "response"
+    | "httpmessages"
     | "error"
     | "connection"
     | "timing"
@@ -39,6 +40,7 @@ type TabId =
 export const tabLabels: Record<TabId, string> = {
     request: Request.displayName,
     response: Response.displayName,
+    httpmessages: HttpMessages.displayName,
     error: Error.displayName,
     connection: Connection.displayName,
     timing: Timing.displayName,
@@ -56,6 +58,8 @@ function renderTab(active: TabId, flow: Flow): React.ReactElement | null {
             return <Request />;
         case "response":
             return <Response />;
+        case "httpmessages":
+            return <HttpMessages />;
         case "error":
             return flow.error ? (
                 <Error flow={flow as Flow & { error: FlowError }} />
@@ -94,7 +98,10 @@ export function tabsForFlow(flow: Flow): TabId[] {
     switch (flow.type) {
         case "http":
             tabs = ["request"];
-            if (flow.response) tabs.push("response");
+            if (flow.response) {
+                tabs.push("response");
+                tabs.push("httpmessages");
+            }
             if (flow.websocket) tabs.push("websocket");
             break;
         case "tcp":
@@ -121,6 +128,7 @@ export default function FlowView() {
     const flow = useAppSelector((state) => state.flows.selected[0]);
     let active = useAppSelector((state) => state.ui.flow.tab) as TabId;
 
+    const showHeaders = useAppSelector((state) => state.ui.flow.showHeaders);
     if (flow == undefined) {
         return <></>;
     }
@@ -128,17 +136,7 @@ export default function FlowView() {
     const tabs = tabsForFlow(flow);
 
     if (tabs.indexOf(active) < 0) {
-        if (active === "response" && flow.error) {
-            active = "error";
-        } else if (
-            active === "error" &&
-            flow.type === "http" &&
-            flow.response
-        ) {
-            active = "response";
-        } else {
-            active = tabs[0];
-        }
+        active = tabs[0];
     }
     return (
         <div className="flow-detail">
@@ -163,6 +161,22 @@ export default function FlowView() {
                         {tabLabels[tabId]}
                     </a>
                 ))}
+                {active === "httpmessages" && (
+                    <button
+                        className={classnames("btn", "btn-xs", "headers-toggle", {
+                            "btn-primary": showHeaders,
+                            "btn-default": !showHeaders,
+                        })}
+                        title={
+                            showHeaders
+                                ? "Hide request/response headers"
+                                : "Show request/response headers"
+                        }
+                        onClick={() => dispatch(toggleHeaders())}
+                    >
+                        Headers
+                    </button>
+                )}
             </nav>
             {renderTab(active, flow)}
         </div>

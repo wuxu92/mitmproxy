@@ -87,7 +87,7 @@ describe("onKeyDown", () => {
         store.dispatch(createKeyEvent("Tab"));
         expect(store.getState().ui.flow.tab).toBe("response");
         store.dispatch(createKeyEvent("ArrowRight"));
-        expect(store.getState().ui.flow.tab).toBe("connection");
+        expect(store.getState().ui.flow.tab).toBe("httpmessages");
     });
 
     it("should handle delete action", () => {

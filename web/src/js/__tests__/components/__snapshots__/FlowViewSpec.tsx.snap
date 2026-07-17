@@ -54,6 +54,12 @@ exports[`FlowView 1`] = `
         class=""
         href="#"
       >
+        Req&Resp
+      </a>
+      <a
+        class=""
+        href="#"
+      >
         WebSocket
       </a>
       <a
@@ -349,6 +355,12 @@ exports[`FlowView 2`] = `
         href="#"
       >
         Response
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Req&Resp
       </a>
       <a
         class=""
@@ -652,6 +664,924 @@ exports[`FlowView 3`] = `
         class="active"
         href="#"
       >
+        Req&Resp
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        WebSocket
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Error
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Connection
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Timing
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Comment
+      </a>
+      <button
+        class="btn btn-xs headers-toggle btn-default"
+        title="Show request/response headers"
+      >
+        Headers
+      </button>
+    </nav>
+    <section
+      class="request"
+    >
+      <div
+        class="first-line request-line"
+      >
+        <div>
+          <span
+            class="inline-input has-success"
+            tabindex="0"
+          >
+            GET
+          </span>
+           
+          <span
+            class="inline-input has-success"
+            tabindex="0"
+          >
+            http://address:22/second
+          </span>
+           
+          <span
+            class="inline-input has-success"
+            tabindex="0"
+          >
+            HTTP/1.1
+          </span>
+        </div>
+      </div>
+      <div
+        class="contentview"
+      >
+        <div
+          class="controls"
+        >
+          <h5>
+            Loading...
+          </h5>
+           
+          <button
+            class="btn-xs btn btn-default"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-pencil icon icon-edit"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+              />
+              <path
+                d="m15 5 4 4"
+              />
+            </svg>
+             Edit
+          </button>
+           
+          <a
+            class="btn btn-default btn-xs"
+            href="#"
+            title="Upload a file to replace the content."
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-upload icon icon-upload"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 3v12"
+              />
+              <path
+                d="m17 8-5-5-5 5"
+              />
+              <path
+                d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+              />
+            </svg>
+             Replace
+            <input
+              class="hidden"
+              type="file"
+            />
+          </a>
+           
+          <a
+            class="btn btn-default btn-xs"
+            href="#"
+          >
+            <span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-files icon icon-files"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"
+                />
+                <path
+                  d="M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"
+                />
+                <path
+                  d="M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"
+                />
+              </svg>
+               
+              <b>
+                View:
+              </b>
+               auto 
+              <span
+                class="caret"
+              />
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+    <div
+      class="splitter splitter-y"
+    >
+      <div />
+    </div>
+    <section
+      class="response"
+    >
+      <div
+        class="first-line response-line"
+      >
+        <span
+          class="inline-input has-success"
+          tabindex="0"
+        >
+          HTTP/1.1
+        </span>
+         
+        <span
+          class="inline-input has-success"
+          tabindex="0"
+        >
+          200
+        </span>
+         
+        <span
+          class="inline-input"
+          tabindex="0"
+        >
+          OK
+        </span>
+      </div>
+      <div
+        class="contentview"
+      >
+        <div
+          class="controls"
+        >
+          <h5>
+            Loading...
+          </h5>
+           
+          <button
+            class="btn-xs btn btn-default"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-pencil icon icon-edit"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+              />
+              <path
+                d="m15 5 4 4"
+              />
+            </svg>
+             Edit
+          </button>
+           
+          <a
+            class="btn btn-default btn-xs"
+            href="#"
+            title="Upload a file to replace the content."
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-upload icon icon-upload"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 3v12"
+              />
+              <path
+                d="m17 8-5-5-5 5"
+              />
+              <path
+                d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+              />
+            </svg>
+             Replace
+            <input
+              class="hidden"
+              type="file"
+            />
+          </a>
+           
+          <a
+            class="btn btn-default btn-xs"
+            href="#"
+          >
+            <span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-files icon icon-files"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"
+                />
+                <path
+                  d="M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"
+                />
+                <path
+                  d="M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"
+                />
+              </svg>
+               
+              <b>
+                View:
+              </b>
+               auto 
+              <span
+                class="caret"
+              />
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`FlowView 4`] = `
+<DocumentFragment>
+  <div
+    class="flow-detail"
+  >
+    <nav
+      class="nav-tabs nav-tabs-sm"
+    >
+      <button
+        class="close-button"
+        data-testid="close-button-id"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-circle-x icon icon-closeCircle"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+          />
+          <path
+            d="m15 9-6 6"
+          />
+          <path
+            d="m9 9 6 6"
+          />
+        </svg>
+      </button>
+      <a
+        class=""
+        href="#"
+      >
+        Request
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Response
+      </a>
+      <a
+        class="active"
+        href="#"
+      >
+        Req&Resp
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        WebSocket
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Error
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Connection
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Timing
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Comment
+      </a>
+      <button
+        class="btn btn-xs headers-toggle btn-primary"
+        title="Hide request/response headers"
+      >
+        Headers
+      </button>
+    </nav>
+    <section
+      class="request"
+    >
+      <div
+        class="first-line request-line"
+      >
+        <div>
+          <span
+            class="inline-input has-success"
+            tabindex="0"
+          >
+            GET
+          </span>
+           
+          <span
+            class="inline-input has-success"
+            tabindex="0"
+          >
+            http://address:22/second
+          </span>
+           
+          <span
+            class="inline-input has-success"
+            tabindex="0"
+          >
+            HTTP/1.1
+          </span>
+        </div>
+      </div>
+      <div
+        class="kv-editor headers"
+      >
+        <div
+          class="kv-row"
+        >
+          <span
+            class="inline-input kv-key"
+            tabindex="0"
+          >
+            header
+          </span>
+          : 
+          <span
+            class="inline-input kv-value"
+            placeholder="empty"
+            tabindex="0"
+          >
+            qvalue
+          </span>
+        </div>
+        <div
+          class="kv-row"
+        >
+          <span
+            class="inline-input kv-key"
+            tabindex="0"
+          >
+            content-length
+          </span>
+          : 
+          <span
+            class="inline-input kv-value"
+            placeholder="empty"
+            tabindex="0"
+          >
+            7
+          </span>
+        </div>
+        <div
+          aria-label="Add"
+          class="kv-add-row"
+          role="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-square-plus icon icon-addSquare"
+            fill="none"
+            height="16"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="18"
+              rx="2"
+              width="18"
+              x="3"
+              y="3"
+            />
+            <path
+              d="M8 12h8"
+            />
+            <path
+              d="M12 8v8"
+            />
+          </svg>
+        </div>
+      </div>
+      <hr />
+      <div
+        class="contentview"
+      >
+        <div
+          class="controls"
+        >
+          <h5>
+            Loading...
+          </h5>
+           
+          <button
+            class="btn-xs btn btn-default"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-pencil icon icon-edit"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+              />
+              <path
+                d="m15 5 4 4"
+              />
+            </svg>
+             Edit
+          </button>
+           
+          <a
+            class="btn btn-default btn-xs"
+            href="#"
+            title="Upload a file to replace the content."
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-upload icon icon-upload"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 3v12"
+              />
+              <path
+                d="m17 8-5-5-5 5"
+              />
+              <path
+                d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+              />
+            </svg>
+             Replace
+            <input
+              class="hidden"
+              type="file"
+            />
+          </a>
+           
+          <a
+            class="btn btn-default btn-xs"
+            href="#"
+          >
+            <span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-files icon icon-files"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"
+                />
+                <path
+                  d="M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"
+                />
+                <path
+                  d="M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"
+                />
+              </svg>
+               
+              <b>
+                View:
+              </b>
+               auto 
+              <span
+                class="caret"
+              />
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+    <div
+      class="splitter splitter-y"
+    >
+      <div />
+    </div>
+    <section
+      class="response"
+    >
+      <div
+        class="first-line response-line"
+      >
+        <span
+          class="inline-input has-success"
+          tabindex="0"
+        >
+          HTTP/1.1
+        </span>
+         
+        <span
+          class="inline-input has-success"
+          tabindex="0"
+        >
+          200
+        </span>
+         
+        <span
+          class="inline-input"
+          tabindex="0"
+        >
+          OK
+        </span>
+      </div>
+      <div
+        class="kv-editor headers"
+      >
+        <div
+          class="kv-row"
+        >
+          <span
+            class="inline-input kv-key"
+            tabindex="0"
+          >
+            header-response
+          </span>
+          : 
+          <span
+            class="inline-input kv-value"
+            placeholder="empty"
+            tabindex="0"
+          >
+            svalue
+          </span>
+        </div>
+        <div
+          class="kv-row"
+        >
+          <span
+            class="inline-input kv-key"
+            tabindex="0"
+          >
+            content-length
+          </span>
+          : 
+          <span
+            class="inline-input kv-value"
+            placeholder="empty"
+            tabindex="0"
+          >
+            7
+          </span>
+        </div>
+        <div
+          aria-label="Add"
+          class="kv-add-row"
+          role="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-square-plus icon icon-addSquare"
+            fill="none"
+            height="16"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="18"
+              rx="2"
+              width="18"
+              x="3"
+              y="3"
+            />
+            <path
+              d="M8 12h8"
+            />
+            <path
+              d="M12 8v8"
+            />
+          </svg>
+        </div>
+      </div>
+      <hr />
+      <div
+        class="contentview"
+      >
+        <div
+          class="controls"
+        >
+          <h5>
+            Loading...
+          </h5>
+           
+          <button
+            class="btn-xs btn btn-default"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-pencil icon icon-edit"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+              />
+              <path
+                d="m15 5 4 4"
+              />
+            </svg>
+             Edit
+          </button>
+           
+          <a
+            class="btn btn-default btn-xs"
+            href="#"
+            title="Upload a file to replace the content."
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-upload icon icon-upload"
+              fill="none"
+              height="16"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 3v12"
+              />
+              <path
+                d="m17 8-5-5-5 5"
+              />
+              <path
+                d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+              />
+            </svg>
+             Replace
+            <input
+              class="hidden"
+              type="file"
+            />
+          </a>
+           
+          <a
+            class="btn btn-default btn-xs"
+            href="#"
+          >
+            <span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-files icon icon-files"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"
+                />
+                <path
+                  d="M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"
+                />
+                <path
+                  d="M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"
+                />
+              </svg>
+               
+              <b>
+                View:
+              </b>
+               auto 
+              <span
+                class="caret"
+              />
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`FlowView 5`] = `
+<DocumentFragment>
+  <div
+    class="flow-detail"
+  >
+    <nav
+      class="nav-tabs nav-tabs-sm"
+    >
+      <button
+        class="close-button"
+        data-testid="close-button-id"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-circle-x icon icon-closeCircle"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+          />
+          <path
+            d="m15 9-6 6"
+          />
+          <path
+            d="m9 9 6 6"
+          />
+        </svg>
+      </button>
+      <a
+        class=""
+        href="#"
+      >
+        Request
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Response
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Req&Resp
+      </a>
+      <a
+        class="active"
+        href="#"
+      >
         WebSocket
       </a>
       <a
@@ -767,7 +1697,7 @@ exports[`FlowView 3`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 4`] = `
+exports[`FlowView 6`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -816,6 +1746,12 @@ exports[`FlowView 4`] = `
         href="#"
       >
         Response
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Req&Resp
       </a>
       <a
         class=""
@@ -1084,7 +2020,7 @@ exports[`FlowView 4`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 5`] = `
+exports[`FlowView 7`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -1133,6 +2069,12 @@ exports[`FlowView 5`] = `
         href="#"
       >
         Response
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Req&Resp
       </a>
       <a
         class=""
@@ -1320,7 +2262,7 @@ exports[`FlowView 5`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 6`] = `
+exports[`FlowView 8`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -1369,6 +2311,12 @@ exports[`FlowView 6`] = `
         href="#"
       >
         Response
+      </a>
+      <a
+        class=""
+        href="#"
+      >
+        Req&Resp
       </a>
       <a
         class=""
@@ -1419,7 +2367,7 @@ exports[`FlowView 6`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 7`] = `
+exports[`FlowView 9`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -1473,6 +2421,12 @@ exports[`FlowView 7`] = `
         class=""
         href="#"
       >
+        Req&Resp
+      </a>
+      <a
+        class=""
+        href="#"
+      >
         WebSocket
       </a>
       <a
@@ -1518,7 +2472,7 @@ exports[`FlowView 7`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 8`] = `
+exports[`FlowView 10`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -1644,7 +2598,7 @@ exports[`FlowView 8`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 9`] = `
+exports[`FlowView 11`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -1731,7 +2685,7 @@ exports[`FlowView 9`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 10`] = `
+exports[`FlowView 12`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -1867,7 +2821,7 @@ exports[`FlowView 10`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 11`] = `
+exports[`FlowView 13`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -2059,7 +3013,7 @@ exports[`FlowView 11`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 12`] = `
+exports[`FlowView 14`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -2152,7 +3106,7 @@ exports[`FlowView 12`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 13`] = `
+exports[`FlowView 15`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -2278,7 +3232,7 @@ exports[`FlowView 13`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 14`] = `
+exports[`FlowView 16`] = `
 <DocumentFragment>
   <div
     class="flow-detail"

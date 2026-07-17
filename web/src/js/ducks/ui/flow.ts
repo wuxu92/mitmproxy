@@ -3,11 +3,15 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface UiFlowState {
     tab: string;
+    /** Whether request/response headers are shown in the combined message view.
+     *  Hidden by default — the body is usually what matters. */
+    showHeaders: boolean;
     contentViewFor: { [messageId: string]: string };
 }
 
 export const defaultState: UiFlowState = {
     tab: "request",
+    showHeaders: false,
     contentViewFor: {},
 };
 
@@ -17,6 +21,9 @@ const flowsSlice = createSlice({
     reducers: {
         selectTab(state, action: PayloadAction<string>) {
             state.tab = action.payload;
+        },
+        toggleHeaders(state) {
+            state.showHeaders = !state.showHeaders;
         },
         setContentViewFor(
             state,
@@ -29,5 +36,5 @@ const flowsSlice = createSlice({
 });
 
 const { actions, reducer } = flowsSlice;
-export const { selectTab, setContentViewFor } = actions;
+export const { selectTab, toggleHeaders, setContentViewFor } = actions;
 export default reducer;

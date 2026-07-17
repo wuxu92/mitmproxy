@@ -14,6 +14,7 @@ import type { HTTPFlow, HTTPMessage, HTTPResponse } from "../../flow";
 import * as flowActions from "../../ducks/flows";
 import KeyValueListEditor from "../editors/KeyValueListEditor";
 import HttpMessage from "../contentviews/HttpMessage";
+import Splitter from "../common/Splitter";
 
 type RequestLineProps = {
     flow: HTTPFlow;
@@ -168,17 +169,24 @@ const Message = React.memo(function Message({
     flow,
     message,
     part,
+    collapseHeaders,
 }:
     | {
           flow: HTTPFlow;
           message: HTTPMessage;
           part: "request";
+          collapseHeaders?: boolean;
       }
     | {
           flow: HTTPFlow & { response: HTTPResponse };
           message: HTTPMessage;
           part: "response";
+          collapseHeaders?: boolean;
       }) {
+    const showHeaders = useAppSelector((state) => state.ui.flow.showHeaders);
+    // Standalone Request/Response tabs always show headers; only the combined
+    // Req&Resp view lets them collapse via the header toggle.
+    const headersVisible = !collapseHeaders || showHeaders;
     return (
         <section className={part}>
             {part === "request" ? (
@@ -186,8 +194,12 @@ const Message = React.memo(function Message({
             ) : (
                 <ResponseLine flow={flow} />
             )}
-            <Headers flow={flow} message={message} />
-            <hr />
+            {headersVisible && (
+                <>
+                    <Headers flow={flow} message={message} />
+                    <hr />
+                </>
+            )}
             <HttpMessage key={flow.id + part} flow={flow} message={message} />
             <Trailers flow={flow} message={message} />
         </section>
@@ -207,3 +219,35 @@ export function Response() {
     return <Message flow={flow} message={flow.response} part="response" />;
 }
 Response.displayName = "Response";
+
+/**
+ * Combined request-and-response view: the request stacked above the response
+ * with a draggable horizontal splitter between them so their heights can be
+ * adjusted. In-flight flows without a response yet show the request alone.
+ * Headers are collapsible here via the header toggle.
+ */
+export function HttpMessages() {
+    const flow = useAppSelector((state) => state.flows.selected[0]) as HTTPFlow;
+    return (
+        <>
+            <Message
+                flow={flow}
+                message={flow.request}
+                part="request"
+                collapseHeaders
+            />
+            {flow.response && (
+                <>
+                    <Splitter axis="y" />
+                    <Message
+                        flow={flow as HTTPFlow & { response: HTTPResponse }}
+                        message={flow.response}
+                        part="response"
+                        collapseHeaders
+                    />
+                </>
+            )}
+        </>
+    );
+}
+HttpMessages.displayName = "Req&Resp";
