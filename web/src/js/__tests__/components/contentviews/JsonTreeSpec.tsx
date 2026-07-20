@@ -131,3 +131,42 @@ test("edits array items by index", () => {
     fireEvent.blur(input);
     expect(changes[0]).toEqual(["a", "c"]);
 });
+
+test("copies a node's value and JSONPath to the clipboard", async () => {
+    const copied: string[] = [];
+    class FakeClipboardItem {
+        constructor(readonly items: Record<string, Promise<string>>) {}
+    }
+    (globalThis as { ClipboardItem?: unknown }).ClipboardItem =
+        FakeClipboardItem;
+    Object.assign(navigator, {
+        clipboard: {
+            write: async (data: FakeClipboardItem[]) => {
+                copied.push(await data[0].items["text/plain"]);
+            },
+        },
+    });
+
+    render(<JsonTree data={sample} />);
+    // Every non-root row exposes copy-value + copy-path buttons; the root does not.
+    expect(screen.getAllByLabelText("Copy JSON path")).toHaveLength(9);
+    expect(screen.getAllByLabelText("Copy value")).toHaveLength(9);
+
+    const rowOf = (text: string) => screen.getByText(text).closest(".json-row")!;
+    // Nested scalar -> dotted path + raw value.
+    fireEvent.click(rowOf('"x"').querySelector(".json-copy-path")!);
+    fireEvent.click(rowOf('"x"').querySelector(".json-copy-value")!);
+    // Array item -> bracketed index.
+    fireEvent.click(rowOf('"b"').querySelector(".json-copy-path")!);
+    // Container value -> pretty JSON.
+    fireEvent.click(rowOf('"tags"').querySelector(".json-copy-value")!);
+
+    // Flush the clipboard write microtasks.
+    for (let i = 0; i < 5; i++) await Promise.resolve();
+    expect(copied).toEqual([
+        "$.nested.inner",
+        "x",
+        "$.tags[1]",
+        '[\n  "a",\n  "b"\n]',
+    ]);
+});

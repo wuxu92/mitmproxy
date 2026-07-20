@@ -1,6 +1,9 @@
 import * as React from "react";
 import { useRef, useState } from "react";
+import classnames from "classnames";
 import Icon from "../common/Icon";
+import type { IconName } from "../common/Icon";
+import { copyToClipboard } from "../../utils";
 
 export type JsonValue =
     | null
@@ -47,6 +50,65 @@ function coerce(text: string, original: JsonValue): JsonValue {
     return text;
 }
 
+type PathSegment = string | number;
+
+const IDENTIFIER = /^[A-Za-z_$][\w$]*$/;
+
+/** Render a path as a JSONPath string, e.g. `$.a.b[0]['weird key']`. */
+function formatJsonPath(path: PathSegment[]): string {
+    let out = "$";
+    for (const seg of path) {
+        if (typeof seg === "number") {
+            out += `[${seg}]`;
+        } else if (IDENTIFIER.test(seg)) {
+            out += `.${seg}`;
+        } else {
+            out += `['${seg.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}']`;
+        }
+    }
+    return out;
+}
+
+/** Serialize a node's value for copying: strings raw, everything else as JSON. */
+function formatValue(value: JsonValue): string {
+    if (typeof value === "string") return value;
+    return JSON.stringify(value, null, isContainer(value) ? 2 : undefined);
+}
+
+interface CopyButtonProps {
+    icon: IconName;
+    label: string;
+    getText: () => string;
+    className: string;
+}
+
+/** Hover-revealed button that copies text to the clipboard with brief feedback. */
+function CopyButton({ icon, label, getText, className }: CopyButtonProps) {
+    const [copied, setCopied] = useState(false);
+    const reset = useRef<number | undefined>(undefined);
+    const copy = () => {
+        copyToClipboard(Promise.resolve(getText()));
+        setCopied(true);
+        clearTimeout(reset.current);
+        reset.current = window.setTimeout(() => setCopied(false), 1000);
+    };
+    return (
+        <span
+            className={classnames("json-btn json-copy", className, {
+                "json-copy-done": copied,
+            })}
+            title={copied ? "Copied!" : label}
+            onClick={copy}
+        >
+            <Icon
+                name={copied ? "confirm" : icon}
+                size={12}
+                aria-label={label}
+            />
+        </span>
+    );
+}
+
 interface JsonTreeProps {
     data: JsonValue;
     editable?: boolean;
@@ -62,6 +124,7 @@ export default function JsonTree({
         <div className="json-tree">
             <JsonNode
                 value={data}
+                path={[]}
                 editable={editable}
                 onChangeValue={(v) => onChange?.(v)}
             />
@@ -73,6 +136,7 @@ interface JsonNodeProps {
     name?: string;
     isIndex?: boolean;
     value: JsonValue;
+    path: PathSegment[];
     editable: boolean;
     onChangeValue: (value: JsonValue) => void;
     onRenameKey?: (newKey: string) => void;
@@ -83,6 +147,7 @@ function JsonNode({
     name,
     isIndex = false,
     value,
+    path,
     editable,
     onChangeValue,
     onRenameKey,
@@ -109,6 +174,23 @@ function JsonNode({
         />
     );
 
+    const copyButtons = path.length > 0 && (
+        <>
+            <CopyButton
+                icon="copy"
+                label="Copy value"
+                className="json-copy-value"
+                getText={() => formatValue(value)}
+            />
+            <CopyButton
+                icon="files"
+                label="Copy JSON path"
+                className="json-copy-path"
+                getText={() => formatJsonPath(path)}
+            />
+        </>
+    );
+
     if (!isContainer(value)) {
         return (
             <div className="json-row">
@@ -119,6 +201,7 @@ function JsonNode({
                     editable={editable}
                     onChange={onChangeValue}
                 />
+                {copyButtons}
                 {deleteButton}
             </div>
         );
@@ -203,6 +286,7 @@ function JsonNode({
                         onClick={addChild}
                     />
                 )}
+                {copyButtons}
                 {deleteButton}
             </div>
             {!collapsed && (
@@ -214,6 +298,7 @@ function JsonNode({
                                 name={key}
                                 isIndex={isArray}
                                 value={childValue}
+                                path={[...path, isArray ? index : key]}
                                 editable={editable}
                                 onChangeValue={(v) =>
                                     updateChild(key, index, v)

@@ -116,6 +116,16 @@
         .json-delete:hover {
             color: firebrick;
         }
+        .json-copy {
+            visibility: hidden;
+        }
+        .json-row:hover > .json-copy,
+        .json-copy-done {
+            visibility: visible;
+        }
+        .json-copy-done {
+            color: seagreen;
+        }
         .json-editable {
             cursor: text;
             border-radius: 3px;
