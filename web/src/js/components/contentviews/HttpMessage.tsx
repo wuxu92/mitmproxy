@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { HTTPFlow, HTTPMessage } from "../../flow";
 import { useAppDispatch, useAppSelector } from "../../ducks";
 import { setContentViewFor } from "../../ducks/ui/flow";
@@ -12,7 +12,7 @@ import { uploadContent } from "../../ducks/flows";
 import Button from "../common/Button";
 import CodeEditor from "./CodeEditor";
 import ContentRenderer from "./ContentRenderer";
-import ViewSelector from "./ViewSelector";
+import ViewSelector, { JSON_TREE_VIEW } from "./ViewSelector";
 import JsonTree from "./JsonTree";
 import type { JsonValue } from "./JsonTree";
 import { SyntaxHighlight } from "../../backends/consts";
@@ -84,10 +84,24 @@ function HttpMessageEdit({ flow, message, stopEdit }: HttpMessageEditProps) {
     const [jsonMode, setJsonMode] = useState(false);
     const [rawMode, setRawMode] = useState(false);
     const [rawText, setRawText] = useState<string>("");
+    // `save` may run from Done's click handler in the same event tick that a
+    // focused value editor commits on blur (mousedown-blur fires before click).
+    // React state updates are async, so read the freshly-committed value from
+    // refs kept in sync synchronously instead of the stale render closure.
+    const jsonDataRef = useRef<JsonValue | undefined>(undefined);
+    const rawTextRef = useRef<string>("");
+    const setJson = useCallback((v: JsonValue | undefined) => {
+        jsonDataRef.current = v;
+        setJsonData(v);
+    }, []);
+    const setRaw = useCallback((t: string) => {
+        rawTextRef.current = t;
+        setRawText(t);
+    }, []);
     useEffect(() => {
         const parsed = isJson ? tryParseJson(content) : null;
         if (parsed) {
-            setJsonData(parsed.value);
+            setJson(parsed.value);
             setJsonMode(true);
         } else {
             setJsonMode(false);
@@ -96,11 +110,11 @@ function HttpMessageEdit({ flow, message, stopEdit }: HttpMessageEditProps) {
 
     const toggleRaw = () => {
         if (!rawMode) {
-            setRawText(JSON.stringify(jsonData, null, 4));
+            setRaw(JSON.stringify(jsonData, null, 4));
             setRawMode(true);
         } else {
             const parsed = tryParseJson(rawText);
-            if (parsed) setJsonData(parsed.value);
+            if (parsed) setJson(parsed.value);
             setRawMode(false);
         }
     };
@@ -108,9 +122,9 @@ function HttpMessageEdit({ flow, message, stopEdit }: HttpMessageEditProps) {
     const save = async () => {
         let newContent: string;
         if (jsonMode && rawMode) {
-            newContent = rawText;
-        } else if (jsonMode && jsonData !== undefined) {
-            newContent = JSON.stringify(jsonData);
+            newContent = rawTextRef.current;
+        } else if (jsonMode && jsonDataRef.current !== undefined) {
+            newContent = JSON.stringify(jsonDataRef.current);
         } else {
             newContent = editedContent ?? content ?? "";
         }
@@ -131,14 +145,14 @@ function HttpMessageEdit({ flow, message, stopEdit }: HttpMessageEditProps) {
                 initialContent={rawText}
                 language={SyntaxHighlight.JAVASCRIPT}
                 onChange={(t) => {
-                    setRawText(t);
+                    setRaw(t);
                     const parsed = tryParseJson(t);
-                    if (parsed) setJsonData(parsed.value);
+                    if (parsed) setJson(parsed.value);
                 }}
             />
         );
     } else if (jsonMode && jsonData !== undefined) {
-        body = <JsonTree data={jsonData} editable onChange={setJsonData} />;
+        body = <JsonTree data={jsonData} editable onChange={setJson} />;
     } else {
         body = (
             <CodeEditor
@@ -208,14 +222,18 @@ function HttpMessageView({ flow, message, startEdit }: HttpMessageViewProps) {
         [maxLines],
     );
 
+    const isJson = isJsonContentType(MessageUtils.getContentType(message));
+    const view = contentView.toLowerCase();
+    // "auto" (default) auto-detects a JSON body; "json tree" forces the tree.
+    // Both render via the backend "json" view, which we then parse into a tree.
     const wantJsonTree =
-        isJsonContentType(MessageUtils.getContentType(message)) &&
-        (contentView === "Auto" || contentView === "JSON");
+        isJson && (view === "auto" || view === JSON_TREE_VIEW);
+    const backendView = view === JSON_TREE_VIEW ? "json" : contentView;
 
     const contentViewData = useContentView(
         flow,
         message,
-        contentView,
+        backendView,
         wantJsonTree ? undefined : maxLines + 1,
         message.contentHash,
     );
@@ -259,6 +277,7 @@ function HttpMessageView({ flow, message, startEdit }: HttpMessageViewProps) {
                 &nbsp;
                 <ViewSelector
                     value={contentView}
+                    isJson={isJson}
                     onChange={(cv) =>
                         dispatch(
                             setContentViewFor({
@@ -302,7 +321,11 @@ function CopyButton({ flow, message }: CopyButtonProps) {
 
     const handleClickCopyButton = async () => {
         try {
-            const url = MessageUtils.getContentURL(flow, message, contentView);
+            const view =
+                contentView.toLowerCase() === JSON_TREE_VIEW
+                    ? "json"
+                    : contentView;
+            const url = MessageUtils.getContentURL(flow, message, view);
             setIsFetchingFullContent(true);
 
             const response = await fetchApi(url);

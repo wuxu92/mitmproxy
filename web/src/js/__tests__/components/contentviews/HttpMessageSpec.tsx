@@ -270,6 +270,40 @@ describe("HttpMessage JSON body", () => {
         expect(document.querySelector(".json-toggle")).not.toBeNull();
     });
 
+    test("switches between the JSON tree and other views via the dropdown", async () => {
+        fetchMock.mockResponse(async (req) => {
+            if (/content\/raw/i.test(req.url))
+                return JSON.stringify({
+                    text: "plain-raw-body",
+                    view_name: "Raw",
+                    description: "",
+                    syntax_highlight: "none",
+                });
+            return JSON.stringify({
+                text: '{\n    "a": 1\n}',
+                view_name: "JSON",
+                description: "",
+                syntax_highlight: "yaml",
+            });
+        });
+        const tflow = jsonFlow();
+        render(<HttpMessage flow={tflow} message={tflow.request} />);
+        // Auto-detected JSON renders as a tree.
+        await waitFor(() => screen.getByText('"a"'));
+
+        // Switch to a non-tree view: the tree disappears, raw text shows.
+        await act(() => fireEvent.click(screen.getByText("auto")));
+        await act(() => fireEvent.click(screen.getByText("raw")));
+        await waitFor(() => screen.getByText("plain-raw-body"));
+        expect(screen.queryByText('"a"')).toBeNull();
+
+        // Switch back via the JSON tree pseudo-view: the tree returns.
+        await act(() => fireEvent.click(screen.getByText("raw")));
+        await act(() => fireEvent.click(screen.getByText("json tree")));
+        await waitFor(() => screen.getByText('"a"'));
+        expect(screen.queryByText("plain-raw-body")).toBeNull();
+    });
+
     test("edits a JSON value inline and saves compact JSON", async () => {
         fetchMock.mockResponses(
             JSON.stringify({
